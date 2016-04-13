@@ -16,6 +16,12 @@ public class GameResponseDispatcher {
 		this.gameManager = _gameManager;
 		 
 	}
+
+	/**
+	 * just sets the json of the player
+	 * @param _playerId
+	 * @return
+     */
 	public boolean ResponseDispatcheLoginDone(int  _playerId)
 	{
 		int currentPlayerId = _playerId;
@@ -70,7 +76,7 @@ public class GameResponseDispatcher {
 	    String jsonStr = currentPlayerJsonObj.toString();
 	   // LOG.severe("jsonStr:"+jsonStr);
 	  //  LOG.severe("getPlayerJson() BEFOR:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
-	    this.gameManager.getPlayers().get(currentPlayerId).setPlayerJson(jsonStr);
+	    this.gameManager.getPlayerList().get(currentPlayerId).setPlayerJson(jsonStr);
 	   // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 
 

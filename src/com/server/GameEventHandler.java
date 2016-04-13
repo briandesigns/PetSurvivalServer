@@ -1,6 +1,7 @@
 package com.server;
 
 import Stats.GameState;
+
 import com.json.JSONObject;
 
 import java.util.logging.Logger;
@@ -29,23 +30,20 @@ public class GameEventHandler {
      */
     public int handleEvent(String _jsonRequest, Channel channel) {
         JSONObject jsonObject = new JSONObject(_jsonRequest);
-        int Event = jsonObject.getInt("event");
+        int event = jsonObject.getInt("event");
         int playerId = -1;
         String userName = jsonObject.getString("username");
-        switch (Event) {
-            case GameState.LOGIN: {
-                Player newPlayer = setPlayerNewAttributes(userName, channel, GameState.LOGIN_DONE);
-                setPlayerInPlayersContainer(newPlayer);
-                playerId = newPlayer.getId();
-                break;
-            }
-            case GameState.PLAY: {
-                playerId = invokePlayEvent(jsonObject);
+        if (event == GameState.LOGIN.ordinal()) {
+            Player newPlayer = setPlayerNewAttributes(userName, channel,
+                    GameState.LOGIN_DONE.ordinal());
+            setPlayerInPlayersContainer(newPlayer);
+            playerId = newPlayer.getId();
+        } else if (event == GameState.PLAY.ordinal()) {
+            playerId = invokePlayEvent(jsonObject);
 
-            }
         }
-
         return playerId;
+
     }
 
 
@@ -59,130 +57,20 @@ public class GameEventHandler {
         JSONObject jsonObject = new JSONObject(_jsonRequest);
         int Event = jsonObject.getInt("event");
         boolean bDone = false;
-        switch (Event) {
-            case Config.LOGIN: {
-                bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatcheLoginDone(_playerId);
-                break;
-            }
-            case Config.PLAY: {
-                bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
-                break;
-            }
+        if (Event == GameState.LOGIN.ordinal()) {
+            bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatcheLoginDone(_playerId);
+
+        } else if (Event == GameState.PLAY.ordinal()) {
+            bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
         }
         return bDone;
     }
 
 
-    private int invokePlayEvent(JSONObject _jsonObject) {
-        int activePlayerId = _jsonObject.getInt("id");
-        int currentPlayerID = this.gameManager.getPlayers().get(activePlayerId).getActiveplayerid();
-        //validation of turn
-        if (activePlayerId == currentPlayerID) {
+    private int invokePlayEvent(JSONObject jsonObject) {
+        int activePlayerId = jsonObject.getInt("id");
+        int currentPlayerID = this.gameManager.getPlayerList().get(activePlayerId).getActiveplayerid();
 
-            //find out who is the previous player
-            int playerInx = getPreviousePlayerIndex(currentPlayerID);
-
-
-            String currentPlayerCardId = this.gameManager.getPlayers().get(activePlayerId).getActivecardid();
-            //check if the cards deck is active in there are cards in it
-            if (this.gameManager.getCardsPlayDeck().size() > 0) {
-                String prevCardId = this.gameManager.getCardsPlayDeck().getFirst();
-                //check which card has greater value
-                int prevCardValue = this.gameManager.getCardValueById(prevCardId);
-                int currentCardValue = this.gameManager.getCardValueById(currentPlayerCardId);
-                //check if previous card is greater
-                if (prevCardValue > currentCardValue) {
-
-                    //set the cards to the winner which is previous player
-                    this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().addLast(currentPlayerCardId);
-                    this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().addLast(prevCardId);
-                    //set as winner
-                    this.gameManager.getPlayerByIndex(playerInx).setWinner(playerInx);
-                    this.gameManager.getPlayerByIndex(playerInx).setWinnercards(currentPlayerCardId + "_" + prevCardId);
-                    this.gameManager.getPlayerByIndex(currentPlayerID).setWinner(playerInx);
-                    this.gameManager.getPlayerByIndex(currentPlayerID).setWinnercards(currentPlayerCardId + "_" + prevCardId);
-
-                    String currentCartId = this.gameManager.getPlayers().get(activePlayerId).getPlayerCards().getFirst();
-                    this.gameManager.getPlayers().get(activePlayerId).setActivecardid(currentCartId);
-
-                    String cardInDeck = this.gameManager.getCardsPlayDeck().getFirst();
-                    this.gameManager.getPlayerByIndex(playerInx).setDeckcard(cardInDeck);
-                    this.gameManager.getCardsPlayDeck().clear();
-
-                }
-                //check if current card is greater
-                else if (prevCardValue < currentCardValue) {
-
-
-                    String prevPlayerCardId = this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().getFirst();
-                    this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().removeFirst();
-                    this.gameManager.getPlayers().get(currentPlayerID).getPlayerCards().addLast(prevPlayerCardId);
-
-                    //set as winner
-                    this.gameManager.getPlayerByIndex(playerInx).setWinner(playerInx);
-                    this.gameManager.getPlayerByIndex(playerInx).setWinnercards(currentPlayerCardId + "_" + prevPlayerCardId);
-                    this.gameManager.getPlayerByIndex(currentPlayerID).setWinner(playerInx);
-                    this.gameManager.getPlayerByIndex(currentPlayerID).setWinnercards(currentPlayerCardId + "_" + prevPlayerCardId);
-
-
-                    String currentCartId = this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().getFirst();
-                    this.gameManager.getPlayerByIndex(playerInx).setActivecardid(currentCartId);
-
-                    String cardInDeck = this.gameManager.getCardsPlayDeck().getFirst();
-                    this.gameManager.getPlayerByIndex(playerInx).setDeckcard(cardInDeck);
-                    this.gameManager.getCardsPlayDeck().clear();
-
-
-                } else if (prevCardValue == currentCardValue) {
-
-                    String PreviousePlayerCards[] = getWarCards(playerInx);
-                    String currentPlayerCards[] = getWarCards(currentPlayerID);
-
-                    int prevCardValue_4 = this.gameManager.getCardValueById(PreviousePlayerCards[3]);
-                    int currentCardValue_4 = this.gameManager.getCardValueById(currentPlayerCards[3]);
-                    //check who is the winner
-                    if (prevCardValue_4 > currentCardValue_4) {
-                        String result = CardsArrayToString(PreviousePlayerCards, currentPlayerCards);
-                        this.gameManager.getPlayerByIndex(playerInx).setWinner(1);
-                        this.gameManager.getPlayerByIndex(playerInx).setWinnercards(result);
-                        String currentCartId = this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().getFirst();
-                        this.gameManager.getPlayerByIndex(playerInx).setActivecardid(currentCartId);
-
-                    } else if (prevCardValue_4 < currentCardValue_4) {
-                        String result = CardsArrayToString(currentPlayerCards, PreviousePlayerCards);
-                        this.gameManager.getPlayerByIndex(currentPlayerID).setWinner(1);
-                        this.gameManager.getPlayerByIndex(currentPlayerID).setWinnercards(result);
-                        String currentCartId = this.gameManager.getPlayerByIndex(currentPlayerID).getPlayerCards().getFirst();
-                        this.gameManager.getPlayerByIndex(currentPlayerID).setActivecardid(currentCartId);
-                    } else if (prevCardValue_4 == currentCardValue_4) {
-                        //TODO
-                        int test = 0;
-                    }
-                    this.gameManager.getCardsPlayDeck().clear();
-                }
-            } else {
-                this.gameManager.getCardsPlayDeck().addFirst(currentPlayerCardId);
-                this.gameManager.getPlayers().get(activePlayerId).getPlayerCards().removeFirst();
-                String currentCartId = this.gameManager.getPlayers().get(activePlayerId).getPlayerCards().getFirst();
-                this.gameManager.getPlayers().get(activePlayerId).setActivecardid(currentCartId);
-
-                String cardInDeck = this.gameManager.getCardsPlayDeck().getFirst();
-                this.gameManager.getPlayers().get(activePlayerId).setDeckcard(cardInDeck);
-
-
-            }
-
-            //Check if there are winners for this game
-            int prevPlayerCardsSize = this.gameManager.getPlayerByIndex(playerInx).getPlayerCards().size();
-            if (prevPlayerCardsSize == 0) {
-                //game is ended
-                this.gameManager.getPlayerByIndex(playerInx).setEndgame(currentPlayerID);
-                this.gameManager.getPlayerByIndex(currentPlayerID).setEndgame(currentPlayerID);
-
-            }
-        } else {
-            activePlayerId = -1;
-        }
         return activePlayerId;
     }
 
@@ -231,21 +119,19 @@ public class GameEventHandler {
         return playerInx;
     }
 
-    private Player setPlayerNewAttributes(String _userName, Channel channel, int nextEvent) {
+    private Player setPlayerNewAttributes(String userName, Channel channel, int nextEvent) {
         Player newPlayer = new Player(channel);
-        newPlayer.setUserName(_userName);
+        newPlayer.setUserName(userName);
         int id = GenerateUniqueId();
-        int count = getPlayerRegistretionCounter();
+        int count = getPlayerRegistrationCounter();
         newPlayer.setRegistertionNum(count);
         newPlayer.setId(id);
         newPlayer.setEvent(nextEvent);
-        setPlayerCards(newPlayer);
-        setNewPlayerCardId(newPlayer);
         return newPlayer;
     }
 
-    private void setPlayerInPlayersContainer(Player _player) {
-        this.gameManager.getPlayers().put(_player.getId(), _player);
+    private void setPlayerInPlayersContainer(Player player) {
+        this.gameManager.getPlayerList().add(player);
     }
 
     private void setPlayerCards(Player _player) {
@@ -276,7 +162,7 @@ public class GameEventHandler {
         return id;
     }
 
-    private int getPlayerRegistretionCounter() {
+    private int getPlayerRegistrationCounter() {
         int count = this.playerRegistretionCounter;
         this.playerRegistretionCounter++;
         return count;
