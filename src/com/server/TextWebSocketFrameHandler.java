@@ -76,8 +76,6 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
         try {
             int playerId = this.gameEventHandler.handleEvent(jsonRequest, ctx.channel());
             if (playerId != -1) {
-//                this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
-
                 for (Player p : this.gameManager.getPlayerList()) {
                     if (p != null) {
                         @SuppressWarnings("rawtypes")

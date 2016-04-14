@@ -1,10 +1,8 @@
 package com.server;
 
 import com.domain.Position;
-import com.domain.Spawn;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 
 /**
@@ -12,15 +10,11 @@ import java.util.logging.Logger;
  */
 public class GameManager {
 
-    private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
-    private final GameResponseDispatcher gameResponseDispatcher;
     private ArrayList<Player> playerList;
     public int[][] map;
 
 
-
     public GameManager() {
-        gameResponseDispatcher = new GameResponseDispatcher(this);
         this.playerList = new ArrayList<Player>();
         this.map = new int[16][16];
     }
@@ -30,27 +24,21 @@ public class GameManager {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 if (map[i][j] == 0) {
-                    return new Position(i,j);
+                    return new Position(i, j);
                 }
             }
         }
         return null;
     }
 
-    public GameResponseDispatcher getGameResponseDispatcher() {
-        return gameResponseDispatcher;
-    }
 
     public ArrayList<Player> getPlayerList() {
         return playerList;
     }
 
-    public void setPlayerList(ArrayList<Player> playerList) {
-        this.playerList = playerList;
-    }
 
     public Player getPlayerByID(int playerID) {
-        for (Player player: this.playerList) {
+        for (Player player : this.playerList) {
             if (player.getId() == playerID) {
                 return player;
             }
@@ -61,10 +49,5 @@ public class GameManager {
     public int[][] getmap() {
         return this.map;
     }
-
-    public void setMap(int[][] map) {
-        this.map = map;
-    }
-
 
 }
