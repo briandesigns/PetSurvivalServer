@@ -197,6 +197,8 @@ public class GameEventHandler {
                             jo.put("health", opponent.getHealth());
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
+                                map[opponent.getPosition().x][opponent.getPosition().y] = 0;
+
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
@@ -220,6 +222,8 @@ public class GameEventHandler {
                             jo.put("health", opponent.getHealth());
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
+                                map[opponent.getPosition().x][opponent.getPosition().y] = 0;
+
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
@@ -243,6 +247,8 @@ public class GameEventHandler {
                             jo.put("health", opponent.getHealth());
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
+                                map[opponent.getPosition().x][opponent.getPosition().y] = 0;
+
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
@@ -266,6 +272,7 @@ public class GameEventHandler {
                             jo.put("health", opponent.getHealth());
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
+                                map[opponent.getPosition().x][opponent.getPosition().y] = 0;
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
