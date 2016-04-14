@@ -19,7 +19,7 @@ public class Enemy extends Character {
         this.enemyID = enemyID;
     }
 
-    @Override
+
     public int getEnemyID() {
         return enemyID;
     }

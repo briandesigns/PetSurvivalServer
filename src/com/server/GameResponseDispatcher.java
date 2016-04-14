@@ -1,29 +1,29 @@
-//package com.server;
-//
-//import com.json.JSONArray;
-//import com.json.JSONObject;
-//
-//import java.util.Iterator;
-//import java.util.Map.Entry;
-//import java.util.logging.Logger;
-//
-//public class GameResponseDispatcher {
-//	private final static Logger LOG = LoggerManager.GetLogger(GameEventHandler.class.getName());
-//	private GameManager gameManager;
-//
-//	public GameResponseDispatcher(GameManager _gameManager)
-//	{
-//		this.gameManager = _gameManager;
-//
-//	}
-//
-//	/**
-//	 * just sets the json of the player
-//	 * @param _playerId
-//	 * @return
-//     */
-//	public boolean ResponseDispatcheLoginDone(int  _playerId)
-//	{
+package com.server;
+
+import com.json.JSONArray;
+import com.json.JSONObject;
+
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
+
+public class GameResponseDispatcher {
+	private final static Logger LOG = LoggerManager.GetLogger(GameEventHandler.class.getName());
+	private GameManager gameManager;
+
+	public GameResponseDispatcher(GameManager _gameManager)
+	{
+		this.gameManager = _gameManager;
+
+	}
+
+	/**
+	 * just sets the json of the player
+	 * @param _playerId
+	 * @return
+     */
+	public boolean ResponseDispatcheLoginDone(int  _playerId)
+	{
 //		int currentPlayerId = _playerId;
 //		Player currentPlayer = this.gameManager.getPlayers().get(currentPlayerId);
 //
@@ -68,7 +68,7 @@
 //	        	//LOG.severe("currentPlayerArrayNewPlayers:"+currentPlayerArrayNewPlayers.toString());
 //	        }
 //
-//
+
 //	    }
 //	    //current user array
 //	    //LOG.severe(currentPlayerArrayNewPlayers.toString());
@@ -78,13 +78,13 @@
 //	  //  LOG.severe("getPlayerJson() BEFOR:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 //	    this.gameManager.getPlayerList().get(currentPlayerId).setPlayerJson(jsonStr);
 //	   // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
-//
-//
-//		return true;
-//	}
-//
-//	public boolean ResponseDispatchePlayDone(int _playerId)
-//	{
+
+
+		return true;
+	}
+
+	public boolean ResponseDispatchePlayDone(int _playerId)
+	{
 //		int currentPlayerId = _playerId;
 //		this.gameManager.getPlayers().get(currentPlayerId).setEvent(Config.PLAY_DONE);
 //		int newActivePlayer = this.gameManager.getNextActivePlayer(currentPlayerId);
@@ -151,27 +151,27 @@
 //	    this.gameManager.getPlayers().get(currentPlayerId).setPlayerJson(jsonStr);
 //	   // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 //
-//		return true;
-//	}
-//
-//	@SuppressWarnings("unused")
-//	private JSONObject setPlayerToJson(final Player _player, final int event,
-//									   final int _playerId)
-//	{
-//		JSONObject _jsonPlayer = new JSONObject();
-//		_jsonPlayer.put("id",_playerId);
-//		_jsonPlayer.put("event",event);
-//		_jsonPlayer.put("username",_player.getUserName());
-//		_jsonPlayer.put("activecardid",_player.getActivecardid());
-//		_jsonPlayer.put("activeplayerid",_player.getActiveplayerid());
-//		_jsonPlayer.put("registertionnum",_player.getRegistertionNum());
-//		_jsonPlayer.put("winner",_player.getWinner());
-//		_jsonPlayer.put("deck",_player.getDeckcard());
-//		_jsonPlayer.put("endgame",_player.getEndgame());
-//		_jsonPlayer.put("winnercards",_player.getWinnercards());
-//		_jsonPlayer.put("numcardsleft",_player.getPlayerCards().size());
-//
-//
-//		return _jsonPlayer;
-//	}
-//}
+		return true;
+	}
+
+	@SuppressWarnings("unused")
+	private JSONObject setPlayerToJson(final Player _player, final int event,
+									   final int _playerId)
+	{
+		JSONObject _jsonPlayer = new JSONObject();
+		_jsonPlayer.put("id",_playerId);
+		_jsonPlayer.put("event",event);
+		_jsonPlayer.put("username",_player.getUserName());
+		_jsonPlayer.put("activecardid",_player.getActivecardid());
+		_jsonPlayer.put("activeplayerid",_player.getActiveplayerid());
+		_jsonPlayer.put("registertionnum",_player.getRegistertionNum());
+		_jsonPlayer.put("winner",_player.getWinner());
+		_jsonPlayer.put("deck",_player.getDeckcard());
+		_jsonPlayer.put("endgame",_player.getEndgame());
+		_jsonPlayer.put("winnercards",_player.getWinnercards());
+		_jsonPlayer.put("numcardsleft",_player.getPlayerCards().size());
+
+
+		return _jsonPlayer;
+	}
+}
