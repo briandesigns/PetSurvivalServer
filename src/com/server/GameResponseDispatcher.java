@@ -72,9 +72,10 @@ public class GameResponseDispatcher {
         //LOG.severe(currentPlayerArrayNewPlayers.toString());
         currentPlayerJsonObj.put("players", currentPlayerArrayNewPlayers);
         String jsonStr = currentPlayerJsonObj.toString();
+        LOG.severe("login json string sent to client: " + jsonStr);
         // LOG.severe("jsonStr:"+jsonStr);
         //  LOG.severe("getPlayerJson() BEFOR:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
-        this.gameManager.getPlayerByID(currentPlayerId).getPlayerJsonList().add(jsonStr);
+//        this.gameManager.getPlayerByID(currentPlayerId).getPlayerJsonList().add(jsonStr);
         // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 
 

@@ -40,12 +40,27 @@ public class GameEventHandler {
                     GameState.LOGIN_DONE.ordinal());
             setPlayerInPlayersContainer(newPlayer);
             playerId = newPlayer.getId();
-            JSONObject jo = new JSONObject();
-            jo.put("event", GameState.SET_POSITION.ordinal());
-            jo.put("x", newPlayer.getPosition().x);
-            jo.put("y", newPlayer.getPosition().y);
-            jo.put("playerID", playerId);
-            newPlayer.getPlayerJsonList().add(jo.toString());
+
+            JSONObject jo1 = new JSONObject();
+            jo1.put("event", GameState.LOGIN_DONE.ordinal());
+            jo1.put("playerID", playerId);
+            newPlayer.getPlayerJsonList().add(jo1.toString());
+
+            for (Player p : this.gameManager.getPlayerList()) {
+                JSONObject jo = new JSONObject();
+                jo.put("event", GameState.SET_POSITION.ordinal());
+                jo.put("x", p.getPosition().x);
+                jo.put("y", p.getPosition().y);
+                jo.put("playerID", p.getId());
+                newPlayer.getPlayerJsonList().add(jo.toString());
+
+                JSONObject jo2 = new JSONObject();
+                jo.put("event", GameState.LOGIN_DONE.ordinal());
+                jo.put("playerID", newPlayer.getId());
+                p.getPlayerJsonList().add(jo2.toString());
+
+            }
+
         } else if (event == GameState.PLAY.ordinal()) {
             playerId = invokePlayEvent(jsonObject);
         }
