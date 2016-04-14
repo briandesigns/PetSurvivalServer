@@ -40,6 +40,10 @@ public class GameEventHandler {
                     GameState.LOGIN_DONE.ordinal());
             setPlayerInPlayersContainer(newPlayer);
             playerId = newPlayer.getId();
+            JSONObject jo = new JSONObject();
+            jo.put("event", GameState.LOGIN_DONE);
+            jo.put("playerID", playerId);
+            newPlayer.getPlayerJsonList().add(jo.toString());
         } else if (event == GameState.PLAY.ordinal()) {
             playerId = invokePlayEvent(jsonObject);
         }
@@ -61,7 +65,7 @@ public class GameEventHandler {
         if (Event == GameState.LOGIN.ordinal()) {
             bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatcheLoginDone(_playerId);
         } else if (Event == GameState.PLAY.ordinal()) {
-            bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
+//            bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
         }
         return bDone;
     }

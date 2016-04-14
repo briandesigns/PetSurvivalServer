@@ -19,7 +19,7 @@ public class Player {
 	//Session channel
 	private Channel channel;
 	//Player Json massage
-	public ArrayList<String> jsonList;
+	public ArrayList<String> jsonList = new ArrayList<String>();
 	//the player which is active and has the turn
 	private int activeplayerid;
 	private int id;

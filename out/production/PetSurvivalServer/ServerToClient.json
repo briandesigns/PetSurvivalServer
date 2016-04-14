@@ -1,0 +1,6 @@
+{
+  event: event,
+  playerID: playerID,
+  move: attack,
+  health: health;
+}

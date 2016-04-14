@@ -34,6 +34,10 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     }
 
+    public TextWebSocketFrameHandler() {
+        ;
+    }
+
     /**
      * accept connnection and upgrade to tcp
      * @param ctx
@@ -73,15 +77,18 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
             int playerId = this.gameEventHandler.handleEvent(jsonRequest, ctx.channel());
             if (playerId != -1) {
-//                this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
+                this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
 
                 for (Player p : this.gameManager.getPlayerList()) {
-                    @SuppressWarnings("rawtypes")
-                    ArrayList<String> jsonList = p.getPlayerJsonList();
-                    for (String jsonMsg: jsonList) {
-                        responseToClient(p, jsonMsg);
-                        LOG.severe("Sending to client id:" + String.valueOf(p.getId()) +
-                                " name:" + p.getUserName() + " json:" + playerId);
+                    if (p != null) {
+                        @SuppressWarnings("rawtypes")
+                        ArrayList<String> jsonList = p.getPlayerJsonList();
+                        for (String jsonMsg: jsonList) {
+                            responseToClient(p, jsonMsg);
+                            LOG.severe("Sending to client id:" + String.valueOf(p.getId()) +
+                                    " name:" + p.getUserName() + " json:" + playerId);
+
+                        }
 
                     }
                 }
