@@ -65,6 +65,7 @@ public class GameEventHandler {
             playerId = invokePlayEvent(jsonObject);
         } else if (event == GameState.LOADING_DONE.ordinal()) {
             Player player = this.gameManager.getPlayerByID(jsonObject.getInt("playerID"));
+            playerId = player.getId();
             for (Player p : this.gameManager.getPlayerList()) {
                 if (p.getId() != player.getId()) {
                     JSONObject jo = new JSONObject();
