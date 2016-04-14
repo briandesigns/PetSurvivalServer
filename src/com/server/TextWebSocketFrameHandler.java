@@ -85,6 +85,11 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
                             responseToClient(p, jsonString);
                             LOG.severe("Sending to client id:" + String.valueOf(p.getId()) +
                                     " name:" + p.getUserName() + " json:" + jsonString);
+                            int state = new JSONObject(jsonString).getInt("event");
+                            int id = new JSONObject(jsonString).getInt("playerID");
+                            if ((p.getId() == id) && (state == GameState.DEATH.ordinal())) {
+                                this.gameManager.removePlayerByID(id);
+                            }
                         }
                     }
 
