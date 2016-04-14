@@ -55,8 +55,8 @@ public class GameEventHandler {
                     JSONObject jo2 = new JSONObject();
                     jo2.put("event", GameState.SET_POSITION.ordinal());
                     jo2.put("playerID", newPlayer.getId());
-                    jo2.put("x", p.getPosition().x);
-                    jo2.put("y", p.getPosition().y);
+                    jo2.put("x", newPlayer.getPosition().x);
+                    jo2.put("y", newPlayer.getPosition().y);
                     p.getPlayerJsonList().add(jo2.toString());
                 }
             }
