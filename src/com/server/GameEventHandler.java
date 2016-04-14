@@ -192,7 +192,7 @@ public class GameEventHandler {
                         JSONObject jo = new JSONObject();
                         jo.put("playerID", activePlayerId);
                         jo.put("event", GameState.PLAY_DONE.ordinal());
-                        jo.put("move", "a4ttack");
+                        jo.put("move", "attack");
                         p.getPlayerJsonList().add(jo.toString());
                     }
                     switch (direction) {
