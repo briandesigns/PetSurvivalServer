@@ -44,21 +44,29 @@ public class GameEventHandler {
             JSONObject jo1 = new JSONObject();
             jo1.put("event", GameState.LOGIN_DONE.ordinal());
             jo1.put("playerID", playerId);
+            jo1.put("x", newPlayer.getPosition().x);
+            jo1.put("y", newPlayer.getPosition().y);
             newPlayer.getPlayerJsonList().add(jo1.toString());
 
             for (Player p : this.gameManager.getPlayerList()) {
-                JSONObject jo = new JSONObject();
-                jo.put("event", GameState.SET_POSITION.ordinal());
-                jo.put("x", p.getPosition().x);
-                jo.put("y", p.getPosition().y);
-                jo.put("playerID", p.getId());
-                newPlayer.getPlayerJsonList().add(jo.toString());
+                if (p.getId() != newPlayer.getId()) {
+                    JSONObject jo = new JSONObject();
+                    jo.put("event", GameState.SET_POSITION.ordinal());
+                    jo.put("x", p.getPosition().x);
+                    jo.put("y", p.getPosition().y);
+                    jo.put("playerID", p.getId());
+                    newPlayer.getPlayerJsonList().add(jo.toString());
+                }
 
-                JSONObject jo2 = new JSONObject();
-                jo.put("event", GameState.LOGIN_DONE.ordinal());
-                jo.put("playerID", newPlayer.getId());
-                p.getPlayerJsonList().add(jo2.toString());
+            }
 
+            for (Player p: this.gameManager.getPlayerList()) {
+                if (p.getId() != newPlayer.getId()) {
+                    JSONObject jo2 = new JSONObject();
+                    jo2.put("event", GameState.SET_POSITION.ordinal());
+                    jo2.put("playerID", newPlayer.getId());
+                    p.getPlayerJsonList().add(jo2.toString());
+                }
             }
 
         } else if (event == GameState.PLAY.ordinal()) {
