@@ -41,8 +41,9 @@ public class GameEventHandler {
             setPlayerInPlayersContainer(newPlayer);
             playerId = newPlayer.getId();
             JSONObject jo = new JSONObject();
-            jo.put("event", GameState.PLAY);
-            jo.put("move", "onLogin");
+            jo.put("event", GameState.SET_POSITION.ordinal());
+            jo.put("x", newPlayer.getPosition().x);
+            jo.put("y", newPlayer.getPosition().y);
             jo.put("playerID", playerId);
             newPlayer.getPlayerJsonList().add(jo.toString());
         } else if (event == GameState.PLAY.ordinal()) {
@@ -254,6 +255,8 @@ public class GameEventHandler {
     }
 
     private void setPlayerInPlayersContainer(Player player) {
+        player.setPosition(this.gameManager.findFreePosition());
+        this.gameManager.map[player.getPosition().x][player.getPosition().y] = player.getId();
         this.gameManager.getPlayerList().add(player);
     }
 
