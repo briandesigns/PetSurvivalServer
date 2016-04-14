@@ -31,6 +31,14 @@ public class GameManager {
         return null;
     }
 
+    public void removePlayerByID(int id) {
+        for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i).getId() == id) {
+                playerList.remove(i);
+            }
+        }
+    }
+
 
     public ArrayList<Player> getPlayerList() {
         return playerList;

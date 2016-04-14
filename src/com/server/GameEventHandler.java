@@ -205,6 +205,8 @@ public class GameEventHandler {
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
+                                this.gameManager.removePlayerByID(opponentID);
+
                             }
                         } else {
                             //do nothing
@@ -230,6 +232,8 @@ public class GameEventHandler {
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
+                                this.gameManager.removePlayerByID(opponentID);
+
                             }
                         } else {
                             //do nothing
@@ -255,6 +259,8 @@ public class GameEventHandler {
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
+                                this.gameManager.removePlayerByID(opponentID);
+
                             }
                         } else {
                             //do nothing
@@ -279,6 +285,7 @@ public class GameEventHandler {
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
+                                this.gameManager.removePlayerByID(opponentID);
                             }
                         } else {
                             //do nothing
