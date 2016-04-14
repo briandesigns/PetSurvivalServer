@@ -207,7 +207,14 @@ public class GameEventHandler {
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
-
+                                if (opponent.getHealth() <=0) {
+                                    JSONObject jover = new JSONObject();
+                                    jover.put("event", GameState.GAME_OVER.ordinal());
+                                    jover.put("playerID", opponentID);
+                                    for (Player p : this.gameManager.getPlayerList()) {
+                                        p.getPlayerJsonList().add(jover.toString());
+                                    }
+                                }
                             } else {
                                 //do nothing
                             }
@@ -246,6 +253,14 @@ public class GameEventHandler {
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
+                                if (opponent.getHealth() <=0) {
+                                    JSONObject jover = new JSONObject();
+                                    jover.put("event", GameState.GAME_OVER.ordinal());
+                                    jover.put("playerID", opponentID);
+                                    for (Player p : this.gameManager.getPlayerList()) {
+                                        p.getPlayerJsonList().add(jover.toString());
+                                    }
+                                }
                             } else {
                                 //do nothing
                             }
@@ -261,6 +276,14 @@ public class GameEventHandler {
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
+                                if (opponent.getHealth() <=0) {
+                                    JSONObject jover = new JSONObject();
+                                    jover.put("event", GameState.GAME_OVER.ordinal());
+                                    jover.put("playerID", opponentID);
+                                    for (Player p : this.gameManager.getPlayerList()) {
+                                        p.getPlayerJsonList().add(jover.toString());
+                                    }
+                                }
                             } else {
                                 //do nothing
                             }
