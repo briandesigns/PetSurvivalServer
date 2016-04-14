@@ -2,8 +2,10 @@ package com.server;
 
 
 import Stats.GameState;
+
 import com.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -71,16 +73,17 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
             int playerId = this.gameEventHandler.handleEvent(jsonRequest, ctx.channel());
             if (playerId != -1) {
-                this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
-                Iterator<Entry<Integer, Player>> it = this.gameManager.getPlayerList().entrySet()
-                        .iterator();
-                while (it.hasNext()) {
+//                this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
+
+                for (Player p : this.gameManager.getPlayerList()) {
                     @SuppressWarnings("rawtypes")
-                    Entry pair = (Entry) it.next();
-                    Player playerIt = ((Player) pair.getValue());
-                    String PlayerMassage = playerIt.getPlayerJson().toString();
-                    responseToClient(playerIt, PlayerMassage);
-                    LOG.severe("Sending to client id:" + String.valueOf(playerIt.getId()) + " name:" + playerIt.getUserName() + " json:" + PlayerMassage);
+                    ArrayList<String> jsonList = p.getPlayerJsonList();
+                    for (String jsonMsg: jsonList) {
+                        responseToClient(p, jsonMsg);
+                        LOG.severe("Sending to client id:" + String.valueOf(p.getId()) +
+                                " name:" + p.getUserName() + " json:" + playerId);
+
+                    }
                 }
             } else {
                 LOG.severe("Sending to clients Failed playerId is -1");

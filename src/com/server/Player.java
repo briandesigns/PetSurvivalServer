@@ -1,5 +1,8 @@
 package com.server;
 
+import com.domain.Position;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
@@ -8,12 +11,15 @@ import io.netty.channel.Channel;
 public class Player {
 	private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
 	private LinkedList<String> PlayerCards;
+	private int health = 100;
+	private Position position;
+	public String direction;
 	private String userName;
 	private int Event;
 	//Session channel
 	private Channel channel;
 	//Player Json massage
-	private String playerJson;
+	public ArrayList<String> jsonList;
 	//the player which is active and has the turn
 	private int activeplayerid;
 	private int id;
@@ -24,9 +30,23 @@ public class Player {
 	private String deckcard;
 	//mark the end game the value will be the winner id
 	private int endgame;
-	
-	 
-	
+
+	public int getHealth() {
+		return health;
+	}
+
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
 	public Player()
 	{
 		this.channel = null;
@@ -72,14 +92,11 @@ public class Player {
 		this.endgame =-1;
 	}
 	
-    public String getPlayerJson() {
-		return playerJson;
+    public ArrayList<String> getPlayerJsonList() {
+		return this.jsonList;
 	}
 
-	public void setPlayerJson(String playerJson) {
-		this.playerJson="";
-		this.playerJson = playerJson;
-	}
+
 	public String getDeckcard() {
 		return deckcard;
 	}

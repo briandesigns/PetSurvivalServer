@@ -2,8 +2,10 @@ package com.server;
 
 import Stats.GameState;
 
+import com.domain.Position;
 import com.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import io.netty.channel.Channel;
@@ -40,7 +42,6 @@ public class GameEventHandler {
             playerId = newPlayer.getId();
         } else if (event == GameState.PLAY.ordinal()) {
             playerId = invokePlayEvent(jsonObject);
-
         }
         return playerId;
 
@@ -48,7 +49,7 @@ public class GameEventHandler {
 
 
     /**
-     * respond to the user after event is handled
+     * just sets a response string for the player
      * @param _playerId
      * @param _jsonRequest
      * @return
@@ -59,7 +60,6 @@ public class GameEventHandler {
         boolean bDone = false;
         if (Event == GameState.LOGIN.ordinal()) {
             bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatcheLoginDone(_playerId);
-
         } else if (Event == GameState.PLAY.ordinal()) {
             bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
         }
@@ -68,56 +68,166 @@ public class GameEventHandler {
 
 
     private int invokePlayEvent(JSONObject jsonObject) {
-        int activePlayerId = jsonObject.getInt("id");
-        int currentPlayerID = this.gameManager.getPlayerList().get(activePlayerId).getActiveplayerid();
+        int activePlayerId = jsonObject.getInt("playerID");
+        String move = jsonObject.getString("move");
+        int[][] map = this.gameManager.getmap();
+        Player activePlayer = this.gameManager.getPlayerByID(activePlayerId);
+        Position activePlayerPosition = activePlayer.getPosition();
 
-        return activePlayerId;
-    }
+        synchronized (this.gameManager.map) {
+            switch (move) {
+                case "up":
+                    if (activePlayerPosition.y == 0) {
+                        //do nothing
+                    } else if (map[activePlayerPosition.x][activePlayerPosition.y - 1] != 0) {
+                        //do nothing
+                    } else {
+                        map[activePlayerPosition.x][activePlayerPosition.y - 1] = activePlayerId;
+                        map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayer.direction = "up";
+                        for (Player p : this.gameManager.getPlayerList()) {
+                            JSONObject jo = new JSONObject();
+                            jo.put("playerID", activePlayer);
+                            jo.put("event", GameState.PLAY);
+                            jo.put("move", "up");
+                            p.getPlayerJsonList().add(jo.toString());
+                        }
+                    }
+                    break;
+                case "down":
+                    if (activePlayerPosition.y == 15) {
+                        //do nothing
+                    } else if (map[activePlayerPosition.x][activePlayerPosition.y + 1] != 0) {
+                        //do nothing
+                    } else {
+                        map[activePlayerPosition.x][activePlayerPosition.y + 1] = activePlayerId;
+                        map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayer.direction = "down";
+                        for (Player p : this.gameManager.getPlayerList()) {
+                            JSONObject jo = new JSONObject();
+                            jo.put("playerID", activePlayer);
+                            jo.put("event", GameState.PLAY);
+                            jo.put("move", "down");
+                            p.getPlayerJsonList().add(jo.toString());
+                        }
+                    }
+                    break;
+                case "left":
+                    if (activePlayerPosition.x == 0) {
+                        //do nothing
+                    } else if (map[activePlayerPosition.x - 1][activePlayerPosition.y] != 0) {
+                        //do nothing
+                    } else {
+                        map[activePlayerPosition.x - 1][activePlayerPosition.y] = activePlayerId;
+                        map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayer.direction = "left";
+                        for (Player p : this.gameManager.getPlayerList()) {
+                            JSONObject jo = new JSONObject();
+                            jo.put("playerID", activePlayer);
+                            jo.put("event", GameState.PLAY);
+                            jo.put("move", "left");
+                            p.getPlayerJsonList().add(jo.toString());
+                        }
 
-    private String CardsArrayToString(String[] cardsPrev, String[] cardsCurrent) {
-        String result = "";
-        for (String s : cardsPrev) {
-            //Do your stuff here
-            result += s;
-            result += "_";
+                    }
+                    break;
+                case "right":
+                    if (activePlayerPosition.x == 15) {
+                        //do nothing
+                    } else if (map[activePlayerPosition.x + 1][activePlayerPosition.y] != 0) {
+                        //do nothing
+                    } else {
+                        map[activePlayerPosition.x + 1][activePlayerPosition.y] = activePlayerId;
+                        map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayer.direction = "right";
+                        for (Player p : this.gameManager.getPlayerList()) {
+                            JSONObject jo = new JSONObject();
+                            jo.put("playerID", activePlayer);
+                            jo.put("event", GameState.PLAY);
+                            jo.put("move", "right");
+                            p.getPlayerJsonList().add(jo.toString());
+                        }
+                    }
+                    break;
+                case "attack":
+                    String direction = activePlayer.direction;
+                    for(Player p: this.gameManager.getPlayerList()) {
+                        JSONObject jo = new JSONObject();
+                        jo.put("playerID", activePlayerId);
+                        jo.put("event", GameState.PLAY);
+                        jo.put("move", "attack");
+                        p.getPlayerJsonList().add(jo.toString());
+                    }
+                    switch (direction) {
+                        case "up":
+                            int opponentID = map[activePlayerPosition.x][activePlayerPosition.y - 1];
+                            if (opponentID != 0) {
+                                Player opponent = this.gameManager.getPlayerByID(opponentID);
+                                opponent.setHealth(opponent.getHealth() - 10);
+                                JSONObject jo = new JSONObject();
+                                jo.put("playerID", opponentID);
+                                jo.put("event", GameState.PLAY);
+                                jo.put("move", "health");
+                                jo.put("health", opponent.getHealth());
+                                opponent.getPlayerJsonList().add(jo.toString());
 
+                            } else {
+                                //do nothing
+                            }
+                            break;
+                        case "down":
+                            opponentID = map[activePlayerPosition.x][activePlayerPosition.y + 1];
+                            if (opponentID != 0) {
+                                Player opponent = this.gameManager.getPlayerByID(opponentID);
+                                opponent.setHealth(opponent.getHealth() - 10);
+                                JSONObject jo = new JSONObject();
+                                jo.put("playerID", opponentID);
+                                jo.put("event", GameState.PLAY);
+                                jo.put("move", "health");
+                                jo.put("health", opponent.getHealth());
+                                opponent.getPlayerJsonList().add(jo.toString());
+                            } else {
+                                //do nothing
+                            }
+                            break;
+                        case "left":
+                            opponentID = map[activePlayerPosition.x - 1][activePlayerPosition.y];
+                            if (opponentID != 0) {
+                                Player opponent = this.gameManager.getPlayerByID(opponentID);
+                                opponent.setHealth(opponent.getHealth() - 10);
+                                JSONObject jo = new JSONObject();
+                                jo.put("playerID", opponentID);
+                                jo.put("event", GameState.PLAY);
+                                jo.put("move", "health");
+                                jo.put("health", opponent.getHealth());
+                                opponent.getPlayerJsonList().add(jo.toString());
+                            } else {
+                                //do nothing
+                            }
+                            break;
+                        case "right":
+                            opponentID = map[activePlayerPosition.x + 1][activePlayerPosition.y];
+                            if (opponentID != 0) {
+                                Player opponent = this.gameManager.getPlayerByID(opponentID);
+                                opponent.setHealth(opponent.getHealth() - 10);
+                                JSONObject jo = new JSONObject();
+                                jo.put("playerID", opponentID);
+                                jo.put("event", GameState.PLAY);
+                                jo.put("move", "health");
+                                jo.put("health", opponent.getHealth());
+                                opponent.getPlayerJsonList().add(jo.toString());
+                            } else {
+                                //do nothing
+                            }
+                            break;
+                    }
+                    break;
+            }
+            return activePlayerId;
         }
-        for (String s : cardsCurrent) {
-            //Do your stuff here
-            result += s;
-            result += "_";
 
-        }
-        result = result.substring(0, result.length() - 1);
-        return result;
     }
 
-    private String[] getWarCards(int playerID) {
-
-        String prevPlayerCardId_1 = this.gameManager.getPlayerByIndex(playerID).getPlayerCards().getFirst();
-        this.gameManager.getPlayerByIndex(playerID).getPlayerCards().removeFirst();
-        String prevPlayerCardId_2 = this.gameManager.getPlayerByIndex(playerID).getPlayerCards().getFirst();
-        this.gameManager.getPlayerByIndex(playerID).getPlayerCards().removeFirst();
-        String prevPlayerCardId_3 = this.gameManager.getPlayerByIndex(playerID).getPlayerCards().getFirst();
-        this.gameManager.getPlayerByIndex(playerID).getPlayerCards().removeFirst();
-        //the fourth card is to play the war
-        String prevPlayerCardId_4 = this.gameManager.getPlayerByIndex(playerID).getPlayerCards().getFirst();
-        this.gameManager.getPlayerByIndex(playerID).getPlayerCards().removeFirst();
-
-        return new String[]{prevPlayerCardId_1, prevPlayerCardId_2, prevPlayerCardId_3, prevPlayerCardId_4};
-    }
-
-    private int getPreviousePlayerIndex(int _currentPlayerID) {
-        //find out who is the previous player
-        int playerInx = this.gameManager.getPlayerIndexByKey(_currentPlayerID);
-        if (playerInx == 0) {
-            int playerSize = this.gameManager.getPlayers().size();
-            playerInx = playerSize - 1;
-        } else {
-            --playerInx;
-        }
-        return playerInx;
-    }
 
     private Player setPlayerNewAttributes(String userName, Channel channel, int nextEvent) {
         Player newPlayer = new Player(channel);
@@ -134,27 +244,6 @@ public class GameEventHandler {
         this.gameManager.getPlayerList().add(player);
     }
 
-    private void setPlayerCards(Player _player) {
-        //this is only good for 2 players
-        int len = this.gameManager.getCardsRandomize().length - 1;
-        if (_player.getId() == 0) {
-            for (int i = 0; i < (len / 2); i++) {
-                _player.getPlayerCards().push(this.gameManager.getCardsRandomizeByIndex(i));
-            }
-        } else if (_player.getId() == 1) {
-            for (int i = len; i > (len / 2); i--) {
-                _player.getPlayerCards().push(this.gameManager.getCardsRandomizeByIndex(i));
-            }
-        }
-
-
-    }
-
-
-    private void setNewPlayerCardId(Player _player) {
-        String cardId = _player.getPlayerCards().removeFirst();
-        _player.setActivecardid(cardId);
-    }
 
     private int GenerateUniqueId() {
         int id = this.playerIdCounter;

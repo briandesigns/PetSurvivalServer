@@ -15,7 +15,7 @@ public class GameManager {
     private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
     private final GameResponseDispatcher gameResponseDispatcher;
     private ArrayList<Player> playerList;
-    private int[][] map;
+    public int[][] map;
 
 
 
@@ -47,6 +47,23 @@ public class GameManager {
 
     public void setPlayerList(ArrayList<Player> playerList) {
         this.playerList = playerList;
+    }
+
+    public Player getPlayerByID(int playerID) {
+        for (Player player: this.playerList) {
+            if (player.getId() == playerID) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public int[][] getmap() {
+        return this.map;
+    }
+
+    public void setMap(int[][] map) {
+        this.map = map;
     }
 
 
