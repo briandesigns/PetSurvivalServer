@@ -16,7 +16,7 @@ import io.netty.channel.Channel;
 public class GameEventHandler {
     private final static Logger LOG = LoggerManager.GetLogger(GameEventHandler.class.getName());
     private GameManager gameManager;
-    private static int playerIdCounter = 0;
+    private static int playerIdCounter = 1;
     private static int playerRegistretionCounter = 0;
 
     public GameEventHandler(GameManager gameManager) {
@@ -34,14 +34,15 @@ public class GameEventHandler {
         JSONObject jsonObject = new JSONObject(_jsonRequest);
         int event = jsonObject.getInt("event");
         int playerId = -1;
-        String userName = jsonObject.getString("username");
+//        String userName = jsonObject.getString("username");
         if (event == GameState.LOGIN.ordinal()) {
-            Player newPlayer = setPlayerNewAttributes(userName, channel,
+            Player newPlayer = setPlayerNewAttributes("anyone", channel,
                     GameState.LOGIN_DONE.ordinal());
             setPlayerInPlayersContainer(newPlayer);
             playerId = newPlayer.getId();
             JSONObject jo = new JSONObject();
-            jo.put("event", GameState.LOGIN_DONE);
+            jo.put("event", GameState.PLAY);
+            jo.put("move", "onLogin");
             jo.put("playerID", playerId);
             newPlayer.getPlayerJsonList().add(jo.toString());
         } else if (event == GameState.PLAY.ordinal()) {
@@ -66,19 +67,21 @@ public class GameEventHandler {
             bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatcheLoginDone(_playerId);
         } else if (Event == GameState.PLAY.ordinal()) {
 //            bDone = this.gameManager.getGameResponseDispatcher().ResponseDispatchePlayDone(_playerId);
+            bDone = true;
         }
         return bDone;
     }
 
 
     private int invokePlayEvent(JSONObject jsonObject) {
+        System.out.println("got to invokeplay");
         int activePlayerId = jsonObject.getInt("playerID");
         String move = jsonObject.getString("move");
         int[][] map = this.gameManager.getmap();
         Player activePlayer = this.gameManager.getPlayerByID(activePlayerId);
         Position activePlayerPosition = activePlayer.getPosition();
 
-        synchronized (this.gameManager.map) {
+//        synchronized (this.gameManager.map) {
             switch (move) {
                 case "up":
                     if (activePlayerPosition.y == 0) {
@@ -88,11 +91,12 @@ public class GameEventHandler {
                     } else {
                         map[activePlayerPosition.x][activePlayerPosition.y - 1] = activePlayerId;
                         map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayerPosition.y-=1;
                         activePlayer.direction = "up";
                         for (Player p : this.gameManager.getPlayerList()) {
                             JSONObject jo = new JSONObject();
-                            jo.put("playerID", activePlayer);
-                            jo.put("event", GameState.PLAY);
+                            jo.put("playerID", activePlayer.getId());
+                            jo.put("event", GameState.PLAY_DONE.ordinal());
                             jo.put("move", "up");
                             p.getPlayerJsonList().add(jo.toString());
                         }
@@ -106,13 +110,16 @@ public class GameEventHandler {
                     } else {
                         map[activePlayerPosition.x][activePlayerPosition.y + 1] = activePlayerId;
                         map[activePlayerPosition.x][activePlayerPosition.y] = 0;
+                        activePlayerPosition.y+=1;
                         activePlayer.direction = "down";
                         for (Player p : this.gameManager.getPlayerList()) {
                             JSONObject jo = new JSONObject();
-                            jo.put("playerID", activePlayer);
-                            jo.put("event", GameState.PLAY);
+                            jo.put("playerID", activePlayer.getId());
+                            jo.put("event", GameState.PLAY_DONE.ordinal());
                             jo.put("move", "down");
                             p.getPlayerJsonList().add(jo.toString());
+                            System.out.println("up is chosen");
+
                         }
                     }
                     break;
@@ -125,10 +132,11 @@ public class GameEventHandler {
                         map[activePlayerPosition.x - 1][activePlayerPosition.y] = activePlayerId;
                         map[activePlayerPosition.x][activePlayerPosition.y] = 0;
                         activePlayer.direction = "left";
+                        activePlayerPosition.x-=1;
                         for (Player p : this.gameManager.getPlayerList()) {
                             JSONObject jo = new JSONObject();
-                            jo.put("playerID", activePlayer);
-                            jo.put("event", GameState.PLAY);
+                            jo.put("playerID", activePlayer.getId());
+                            jo.put("event", GameState.PLAY_DONE.ordinal());
                             jo.put("move", "left");
                             p.getPlayerJsonList().add(jo.toString());
                         }
@@ -144,10 +152,11 @@ public class GameEventHandler {
                         map[activePlayerPosition.x + 1][activePlayerPosition.y] = activePlayerId;
                         map[activePlayerPosition.x][activePlayerPosition.y] = 0;
                         activePlayer.direction = "right";
+                        activePlayerPosition.x += 1;
                         for (Player p : this.gameManager.getPlayerList()) {
                             JSONObject jo = new JSONObject();
-                            jo.put("playerID", activePlayer);
-                            jo.put("event", GameState.PLAY);
+                            jo.put("playerID", activePlayer.getId());
+                            jo.put("event", GameState.PLAY_DONE.ordinal());
                             jo.put("move", "right");
                             p.getPlayerJsonList().add(jo.toString());
                         }
@@ -158,7 +167,7 @@ public class GameEventHandler {
                     for(Player p: this.gameManager.getPlayerList()) {
                         JSONObject jo = new JSONObject();
                         jo.put("playerID", activePlayerId);
-                        jo.put("event", GameState.PLAY);
+                        jo.put("event", GameState.PLAY_DONE.ordinal());
                         jo.put("move", "attack");
                         p.getPlayerJsonList().add(jo.toString());
                     }
@@ -170,7 +179,7 @@ public class GameEventHandler {
                                 opponent.setHealth(opponent.getHealth() - 10);
                                 JSONObject jo = new JSONObject();
                                 jo.put("playerID", opponentID);
-                                jo.put("event", GameState.PLAY);
+                                jo.put("event", GameState.PLAY_DONE.ordinal());
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
@@ -186,7 +195,7 @@ public class GameEventHandler {
                                 opponent.setHealth(opponent.getHealth() - 10);
                                 JSONObject jo = new JSONObject();
                                 jo.put("playerID", opponentID);
-                                jo.put("event", GameState.PLAY);
+                                jo.put("event", GameState.PLAY_DONE.ordinal());
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
@@ -201,7 +210,7 @@ public class GameEventHandler {
                                 opponent.setHealth(opponent.getHealth() - 10);
                                 JSONObject jo = new JSONObject();
                                 jo.put("playerID", opponentID);
-                                jo.put("event", GameState.PLAY);
+                                jo.put("event", GameState.PLAY_DONE.ordinal());
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
@@ -216,7 +225,7 @@ public class GameEventHandler {
                                 opponent.setHealth(opponent.getHealth() - 10);
                                 JSONObject jo = new JSONObject();
                                 jo.put("playerID", opponentID);
-                                jo.put("event", GameState.PLAY);
+                                jo.put("event", GameState.PLAY_DONE.ordinal());
                                 jo.put("move", "health");
                                 jo.put("health", opponent.getHealth());
                                 opponent.getPlayerJsonList().add(jo.toString());
@@ -228,7 +237,7 @@ public class GameEventHandler {
                     break;
             }
             return activePlayerId;
-        }
+//        }
 
     }
 

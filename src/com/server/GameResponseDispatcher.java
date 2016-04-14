@@ -11,79 +11,77 @@ import java.util.logging.Logger;
 import Stats.GameState;
 
 public class GameResponseDispatcher {
-	private final static Logger LOG = LoggerManager.GetLogger(GameEventHandler.class.getName());
-	private GameManager gameManager;
+    private final static Logger LOG = LoggerManager.GetLogger(GameEventHandler.class.getName());
+    private GameManager gameManager;
 
-	public GameResponseDispatcher(GameManager _gameManager)
-	{
-		this.gameManager = _gameManager;
+    public GameResponseDispatcher(GameManager _gameManager) {
+        this.gameManager = _gameManager;
 
-	}
-	public boolean ResponseDispatcheLoginDone(int  _playerId)
-	{
-		int currentPlayerId = _playerId;
-		Player currentPlayer = this.gameManager.getPlayerList().get(currentPlayerId);
+    }
 
-		JSONObject currentPlayerJsonObj = setPlayerToJson(currentPlayer,
-												   currentPlayer.getEvent(),
-												   currentPlayer.getId());
+    public boolean ResponseDispatcheLoginDone(int _playerId) {
+        int currentPlayerId = _playerId;
+        Player currentPlayer = this.gameManager.getPlayerByID(currentPlayerId);
 
-		JSONObject currentPlayerJsonObj2 = setPlayerToJson(currentPlayer,
-											   currentPlayer.getEvent(),
-											   currentPlayer.getId());
+        JSONObject currentPlayerJsonObj = setPlayerToJson(currentPlayer,
+                currentPlayer.getEvent(),
+                currentPlayer.getId());
 
-		//build the other players json
-    	JSONArray currentPlayerArrayNewPlayers = new JSONArray();
-    	JSONArray ArrayCurrentPlayers = new JSONArray();
-    	ArrayCurrentPlayers.put(currentPlayerJsonObj2);
+        JSONObject currentPlayerJsonObj2 = setPlayerToJson(currentPlayer,
+                currentPlayer.getEvent(),
+                currentPlayer.getId());
 
-    	Iterator<Player> it = this.gameManager.getPlayerList()
-				.iterator();
-	    while (it.hasNext()) {
-	    	@SuppressWarnings("rawtypes")
-	        Player playerIt = it.next();
+        //build the other players json
+        JSONArray currentPlayerArrayNewPlayers = new JSONArray();
+        JSONArray ArrayCurrentPlayers = new JSONArray();
+        ArrayCurrentPlayers.put(currentPlayerJsonObj2);
 
-
-	        if(currentPlayerId != playerIt.getId())
-	        {
-	        	this.gameManager.getPlayerList().get(playerIt.getId()).setEvent(GameState
-						.NEW_USER_LOGIN_DONE.ordinal());
-	        	JSONObject playerJsonObjIt = setPlayerToJson(playerIt,
-									        				GameState.NEW_USER_LOGIN_DONE.ordinal(),
-									        				playerIt.getId());
-	        	JSONObject newPlayerForCurrent  = setPlayerToJson(playerIt,
-										        				GameState.NEW_USER_LOGIN_DONE
-																		.ordinal(),
-										        				playerIt.getId());
-	        	//to current
-	        	//LOG.severe(newPlayerForCurrent.toString());
-	        	currentPlayerArrayNewPlayers.put(newPlayerForCurrent);
-	        	//LOG.severe(currentPlayerArrayNewPlayers.toString());
-	        	//to others
-	        	playerJsonObjIt.put("players",ArrayCurrentPlayers);
-	        	String jsonStr = playerJsonObjIt.toString();
-	        	//LOG.severe("jsonStr in while:"+jsonStr);
-	        	this.gameManager.getPlayerByID(playerIt.getId()).getPlayerJsonList().add(jsonStr);
-	        	//LOG.severe("currentPlayerArrayNewPlayers:"+currentPlayerArrayNewPlayers.toString());
-	        }
+        Iterator<Player> it = this.gameManager.getPlayerList()
+                .iterator();
+        while (it.hasNext()) {
+            @SuppressWarnings("rawtypes")
+            Player playerIt = it.next();
 
 
-	    }
-	    //current user array
-	    //LOG.severe(currentPlayerArrayNewPlayers.toString());
-	    currentPlayerJsonObj.put("players",currentPlayerArrayNewPlayers);
-	    String jsonStr = currentPlayerJsonObj.toString();
-	   // LOG.severe("jsonStr:"+jsonStr);
-	  //  LOG.severe("getPlayerJson() BEFOR:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
-	    this.gameManager.getPlayerList().get(currentPlayerId).getPlayerJsonList().add(jsonStr);
-	   // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
+            if (currentPlayerId != playerIt.getId()) {
+                this.gameManager.getPlayerByID(playerIt.getId()).setEvent(GameState
+                        .NEW_USER_LOGIN_DONE.ordinal());
+                JSONObject playerJsonObjIt = setPlayerToJson(
+                        playerIt,
+                        GameState.NEW_USER_LOGIN_DONE.ordinal(),
+                        playerIt.getId());
+                JSONObject newPlayerForCurrent = setPlayerToJson(
+                        playerIt,
+                        GameState.NEW_USER_LOGIN_DONE.ordinal(),
+                        playerIt.getId());
+                //to current
+                //LOG.severe(newPlayerForCurrent.toString());
+                currentPlayerArrayNewPlayers.put(newPlayerForCurrent);
+                //LOG.severe(currentPlayerArrayNewPlayers.toString());
+                //to others
+                playerJsonObjIt.put("players", ArrayCurrentPlayers);
+                String jsonStr = playerJsonObjIt.toString();
+                //LOG.severe("jsonStr in while:"+jsonStr);
+                this.gameManager.getPlayerByID(playerIt.getId()).getPlayerJsonList().add(jsonStr);
+                //LOG.severe("currentPlayerArrayNewPlayers:"+currentPlayerArrayNewPlayers.toString());
+            }
 
 
-		return true;
-	}
+        }
+        //current user array
+        //LOG.severe(currentPlayerArrayNewPlayers.toString());
+        currentPlayerJsonObj.put("players", currentPlayerArrayNewPlayers);
+        String jsonStr = currentPlayerJsonObj.toString();
+        // LOG.severe("jsonStr:"+jsonStr);
+        //  LOG.severe("getPlayerJson() BEFOR:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
+        this.gameManager.getPlayerByID(currentPlayerId).getPlayerJsonList().add(jsonStr);
+        // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 
-	public boolean ResponseDispatchePlayDone(int _playerId)
-	{
+
+        return true;
+    }
+
+    public boolean ResponseDispatchePlayDone(int _playerId) {
 //		int currentPlayerId = _playerId;
 //		this.gameManager.getPlayers().get(currentPlayerId).setEvent(Config.PLAY_DONE);
 //		int newActivePlayer = this.gameManager.getNextActivePlayer(currentPlayerId);
@@ -150,27 +148,26 @@ public class GameResponseDispatcher {
 //	    this.gameManager.getPlayers().get(currentPlayerId).setPlayerJson(jsonStr);
 //	   // LOG.severe("getPlayerJson() AFTER:"+this.gameManager.getPlayers().get(currentPlayerId).getPlayerJson());
 //
-		return true;
-	}
+        return true;
+    }
 
-	@SuppressWarnings("unused")
-	private JSONObject setPlayerToJson(final Player _player, final int event,
-									   final int _playerId)
-	{
-		JSONObject _jsonPlayer = new JSONObject();
-		_jsonPlayer.put("id",_playerId);
-		_jsonPlayer.put("event",event);
-		_jsonPlayer.put("username",_player.getUserName());
-		_jsonPlayer.put("activecardid",_player.getActivecardid());
-		_jsonPlayer.put("activeplayerid",_player.getActiveplayerid());
-		_jsonPlayer.put("registertionnum",_player.getRegistertionNum());
-		_jsonPlayer.put("winner",_player.getWinner());
-		_jsonPlayer.put("deck",_player.getDeckcard());
-		_jsonPlayer.put("endgame",_player.getEndgame());
-		_jsonPlayer.put("winnercards",_player.getWinnercards());
-		_jsonPlayer.put("numcardsleft",_player.getPlayerCards().size());
+    @SuppressWarnings("unused")
+    private JSONObject setPlayerToJson(final Player _player, final int event,
+                                       final int _playerId) {
+        JSONObject _jsonPlayer = new JSONObject();
+        _jsonPlayer.put("id", _playerId);
+        _jsonPlayer.put("event", event);
+        _jsonPlayer.put("username", _player.getUserName());
+        _jsonPlayer.put("activecardid", _player.getActivecardid());
+        _jsonPlayer.put("activeplayerid", _player.getActiveplayerid());
+        _jsonPlayer.put("registertionnum", _player.getRegistertionNum());
+        _jsonPlayer.put("winner", _player.getWinner());
+        _jsonPlayer.put("deck", _player.getDeckcard());
+        _jsonPlayer.put("endgame", _player.getEndgame());
+        _jsonPlayer.put("winnercards", _player.getWinnercards());
+        _jsonPlayer.put("numcardsleft", _player.getPlayerCards().size());
 
 
-		return _jsonPlayer;
-	}
+        return _jsonPlayer;
+    }
 }

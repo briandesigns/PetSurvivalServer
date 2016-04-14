@@ -12,7 +12,7 @@ public class Player {
 	private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
 	private LinkedList<String> PlayerCards;
 	private int health = 100;
-	private Position position;
+	private Position position = new Position(0,0);
 	public String direction;
 	private String userName;
 	private int Event;

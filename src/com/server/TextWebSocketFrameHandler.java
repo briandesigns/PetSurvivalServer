@@ -74,7 +74,6 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
         String jsonRequest = frame.text();
         LOG.severe("Recived from client :" + jsonRequest);
         try {
-
             int playerId = this.gameEventHandler.handleEvent(jsonRequest, ctx.channel());
             if (playerId != -1) {
                 this.gameEventHandler.ResponseDispatcher(playerId, jsonRequest);
@@ -83,14 +82,14 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
                     if (p != null) {
                         @SuppressWarnings("rawtypes")
                         ArrayList<String> jsonList = p.getPlayerJsonList();
-                        for (String jsonMsg: jsonList) {
-                            responseToClient(p, jsonMsg);
+                        while (jsonList.size()>0) {
+                            String jsonString = jsonList.remove(0);
+                            responseToClient(p, jsonString);
                             LOG.severe("Sending to client id:" + String.valueOf(p.getId()) +
-                                    " name:" + p.getUserName() + " json:" + playerId);
-
+                                    " name:" + p.getUserName() + " json:" + jsonString);
                         }
-
                     }
+
                 }
             } else {
                 LOG.severe("Sending to clients Failed playerId is -1");
