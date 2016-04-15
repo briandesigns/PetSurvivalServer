@@ -1,12 +1,10 @@
 package com.server;
 
-import com.domain.Position;
-
 import java.util.ArrayList;
 
 
 /**
- * game state holder
+ * game state holder. holds the true state of a game to prevent cheating
  */
 public class GameManager {
 
@@ -20,6 +18,10 @@ public class GameManager {
     }
 
 
+    /**
+     * find empty spot on the map
+     * @return
+     */
     public Position findFreePosition() {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
@@ -31,6 +33,10 @@ public class GameManager {
         return null;
     }
 
+    /**
+     * remove a player from player list by ID
+     * @param id
+     */
     public void removePlayerByID(int id) {
         for (int i = 0; i < playerList.size(); i++) {
             if (playerList.get(i).getId() == id) {
@@ -44,7 +50,6 @@ public class GameManager {
         return playerList;
     }
 
-
     public Player getPlayerByID(int playerID) {
         for (Player player : this.playerList) {
             if (player.getId() == playerID) {
@@ -54,7 +59,7 @@ public class GameManager {
         return null;
     }
 
-    public int[][] getmap() {
+    public int[][] getMap() {
         return this.map;
     }
 

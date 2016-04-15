@@ -1,7 +1,7 @@
-package com.domain;
+package com.server;
 
 /**
- * Created by brian on 4/12/16.
+ * position on the map
  */
 public class Position {
     public int x;

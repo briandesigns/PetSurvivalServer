@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-//DONE
+
+/**
+ * for logging server info
+ */
 public class LoggerManager {
 
     private static final LogManager logManager = LogManager.getLogManager();

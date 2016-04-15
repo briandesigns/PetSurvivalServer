@@ -1,17 +1,12 @@
 package com.server;
 
-import Stats.GameState;
-
-import com.domain.Position;
 import com.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import io.netty.channel.Channel;
 
 /**
  * this class will handle all the request / response logic and game protocol
+ * This is our game engine
  */
 public class GameEventHandler {
     private GameManager gameManager;
@@ -79,23 +74,25 @@ public class GameEventHandler {
 
     }
 
+    /**
+     * this applies the moves made by all players to the game state
+     * this method essentially plays the game
+     * @param jsonObject
+     * @return
+     */
     private int invokePlayEvent(JSONObject jsonObject) {
-        System.out.println("got to invokeplay");
         int activePlayerId = jsonObject.getInt("playerID");
         String move = jsonObject.getString("move");
-        int[][] map = this.gameManager.getmap();
+        int[][] map = this.gameManager.getMap();
         Player activePlayer = this.gameManager.getPlayerByID(activePlayerId);
         Position activePlayerPosition = activePlayer.getPosition();
 
         switch (move) {
             case "up":
                 if (activePlayerPosition.y == 0) {
-                    //do nothing
                     activePlayer.direction = "up";
                 } else if (map[activePlayerPosition.x][activePlayerPosition.y - 1] != 0) {
-                    //do nothing
                     activePlayer.direction = "up";
-
                 } else {
                     map[activePlayerPosition.x][activePlayerPosition.y - 1] = activePlayerId;
                     map[activePlayerPosition.x][activePlayerPosition.y] = 0;
@@ -113,10 +110,8 @@ public class GameEventHandler {
             case "down":
                 if (activePlayerPosition.y == 15) {
                     activePlayer.direction = "down";
-
                 } else if (map[activePlayerPosition.x][activePlayerPosition.y + 1] != 0) {
                     activePlayer.direction = "down";
-
                 } else {
                     map[activePlayerPosition.x][activePlayerPosition.y + 1] = activePlayerId;
                     map[activePlayerPosition.x][activePlayerPosition.y] = 0;
@@ -128,8 +123,6 @@ public class GameEventHandler {
                         jo.put("event", GameState.PLAY_DONE.ordinal());
                         jo.put("move", "down");
                         p.getPlayerJsonList().add(jo.toString());
-                        System.out.println("up is chosen");
-
                     }
                 }
                 break;
@@ -138,7 +131,6 @@ public class GameEventHandler {
                     activePlayer.direction = "left";
                 } else if (map[activePlayerPosition.x - 1][activePlayerPosition.y] != 0) {
                     activePlayer.direction = "left";
-
                 } else {
                     map[activePlayerPosition.x - 1][activePlayerPosition.y] = activePlayerId;
                     map[activePlayerPosition.x][activePlayerPosition.y] = 0;
@@ -198,18 +190,14 @@ public class GameEventHandler {
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
                                 map[opponent.getPosition().x][opponent.getPosition().y] = 0;
-
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
-//                                this.gameManager.removePlayerByID(opponentID);
-
                             }
                         } else {
-                            //do nothing
                         }
                         break;
                     case "down":
@@ -225,18 +213,14 @@ public class GameEventHandler {
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
                                 map[opponent.getPosition().x][opponent.getPosition().y] = 0;
-
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
-//                                this.gameManager.removePlayerByID(opponentID);
-
                             }
                         } else {
-                            //do nothing
                         }
                         break;
                     case "left":
@@ -252,18 +236,14 @@ public class GameEventHandler {
                             opponent.getPlayerJsonList().add(jo.toString());
                             if (opponent.getHealth() <= 0) {
                                 map[opponent.getPosition().x][opponent.getPosition().y] = 0;
-
                                 JSONObject jover = new JSONObject();
                                 jover.put("event", GameState.DEATH.ordinal());
                                 jover.put("playerID", opponentID);
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
-//                                this.gameManager.removePlayerByID(opponentID);
-
                             }
                         } else {
-                            //do nothing
                         }
                         break;
                     case "right":
@@ -285,10 +265,8 @@ public class GameEventHandler {
                                 for (Player p : this.gameManager.getPlayerList()) {
                                     p.getPlayerJsonList().add(jover.toString());
                                 }
-//                                this.gameManager.removePlayerByID(opponentID);
                             }
                         } else {
-                            //do nothing
                         }
                         break;
                 }
@@ -299,6 +277,13 @@ public class GameEventHandler {
     }
 
 
+    /**
+     * give the newly created player a unique ID
+     * @param userName
+     * @param channel
+     * @param nextEvent
+     * @return
+     */
     private Player setPlayerNewAttributes(String userName, Channel channel, int nextEvent) {
         Player newPlayer = new Player(channel);
         newPlayer.setUserName(userName);
@@ -309,6 +294,10 @@ public class GameEventHandler {
         return newPlayer;
     }
 
+    /**
+     * add new player to game state
+     * @param player
+     */
     private void setPlayerInPlayersContainer(Player player) {
         player.setPosition(this.gameManager.findFreePosition());
         this.gameManager.map[player.getPosition().x][player.getPosition().y] = player.getId();
@@ -316,12 +305,20 @@ public class GameEventHandler {
     }
 
 
+    /**
+     * generate a unique iD
+     * @return
+     */
     private int GenerateUniqueId() {
         int id = this.playerIdCounter;
         this.playerIdCounter++;
         return id;
     }
 
+    /**
+     * count number of players that have logged on
+     * @return
+     */
     private int getPlayerRegistrationCounter() {
         int count = this.playerRegistretionCounter;
         this.playerRegistretionCounter++;

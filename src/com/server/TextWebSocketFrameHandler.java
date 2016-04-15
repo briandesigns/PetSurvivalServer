@@ -1,13 +1,9 @@
 package com.server;
 
 
-import Stats.GameState;
-
 import com.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -23,7 +19,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
  */
 //@Sharable 
 public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
-    //private static final AttributeKey<GameManager> GameManagerAttribute = AttributeKey.valueOf("gameManager");
+
     private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
     private GameManager gameManager;
     private GameEventHandler gameEventHandler;
@@ -34,12 +30,8 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     }
 
-    public TextWebSocketFrameHandler() {
-        ;
-    }
-
     /**
-     * accept connnection and upgrade to tcp
+     * accept connnection and upgrade to tcp for the client
      * @param ctx
      * @param evt
      * @throws Exception
@@ -103,6 +95,11 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
         }
     }
 
+    /**
+     * send message to client
+     * @param _player
+     * @param responseJson
+     */
     private void responseToClient(Player _player, String responseJson) {
         _player.getChannel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }

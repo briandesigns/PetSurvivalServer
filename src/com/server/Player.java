@@ -1,27 +1,22 @@
 package com.server;
 
-import com.domain.Position;
-
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.logging.Logger;
 
 import io.netty.channel.Channel;
 
+/**
+ * player class that holds client information as well as the player character info on the map
+ */
 public class Player {
-    private final static Logger LOG = LoggerManager.GetLogger(GameServerMain.class.getName());
+
     private int health = 100;
     private Position position = new Position(0, 0);
     public String direction;
     private String userName;
-    //Session channel
     private Channel channel;
-    //Player Json massage
     public ArrayList<String> jsonList = new ArrayList<String>();
-    //the player which is active and has the turn
     private int id;
     private int registertionNum;
-    //mark the end game the value will be the winner id
 
     public int getHealth() {
         return health;
